@@ -33,7 +33,6 @@ async def process_successful_payment(user_id: int = Body(embed=True),
             logger.debug("Checked user existence by tg_id=%s, result: %s", int(user_id), user_exists)
 
             if not user_exists:
-                logger.debug("Created db user tg=%s", int(user_id))
                 await add_new_user_to_db_without_commit(
                     new_user=NewUserSchema(
                         tg_id=int(user_id),
@@ -41,6 +40,7 @@ async def process_successful_payment(user_id: int = Body(embed=True),
                     ),
                     session=db_session
                 )
+                logger.debug("Created db user tg=%s", int(user_id))
             else:
                 old_balance = await get_user_balance_by_tg_id(
                     tg_id=int(user_id),
