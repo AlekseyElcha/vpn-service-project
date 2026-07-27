@@ -7,7 +7,7 @@ from src.core.server.get_status import get_xray_status, get_server_status
 from src.repos.http_connector.get_http_session import get_http_session
 
 
-router = APIRouter(prefix="/server", tags=["server"])
+router = APIRouter(prefix="/server", tags=["Server"])
 
 
 @router.get("/status")

@@ -11,7 +11,8 @@ from src.api.v1.clients import router as clients_router
 from src.api.v1.users import router as users_router
 from src.api.v1.server import router as server_router
 from src.api.v1.pay import router as payment_router
-
+from src.api.v1.checks import router as checks_router
+from src.api.v1.promo import router as promo_router
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -29,6 +30,7 @@ tags_metadata = [
     {"name": "Users", "description": "Работа с администраторами."},
     {"name": "Payment", "description": "Прием оплаты через Telegram Stars"},
     {"name": "Server", "description": "Получение метрик VPN-сервера"},
+    {"name": "Checks", "description": "Пингование инфраструктуры"},
 ]
 
 
@@ -52,6 +54,8 @@ app.include_router(router=clients_router)
 app.include_router(router=payment_router)
 app.include_router(router=users_router)
 app.include_router(router=server_router)
+app.include_router(router=checks_router)
+app.include_router(router=promo_router)
 
 @app.get("/")
 async def root():

@@ -12,3 +12,7 @@ class UserAlreadyExists(DBBaseException):
 
 class DBCrudException(BaseException):
     pass
+
+
+class NotFoundException(BaseException):
+    pass

@@ -1,4 +1,5 @@
 import time
+import uuid
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
@@ -57,3 +58,19 @@ class PaymentRecordSchema(BaseModel):
     time: int
     amount: int | float
 
+
+class PromoCodeSchema(BaseModel):
+    code: str
+    bonus_amount: int
+    creation_time: Optional[int] = Field(default_factory=lambda: int(time.time()))
+    expiry_time: Optional[int] = Field(default=999999999999999999)
+    activations_count: int
+    enable: bool = Field(default=True)
+
+
+class PromoCodeActivationRecordSchema(BaseModel):
+    tg_id: int
+    # Добавляем UUID промокода, который мы привязываем к этой записи
+    promo_id: uuid.UUID
+    # Используем int | None для Python 3.10+
+    time: int = Field(default_factory=lambda: int(time.time()))
