@@ -66,9 +66,8 @@ class PaymentRecordSchema(BaseModel):
 class PromoCodeSchema(BaseModel):
     code: str
     bonus_amount: int
-    creation_time: Optional[int] = Field(default_factory=lambda: int(time.time()))
     expiry_time: Optional[int] = Field(default=999999999999999999)
-    activations_count: int
+    activations_left: int
     enable: bool = Field(default=True)
 
 
