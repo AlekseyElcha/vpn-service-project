@@ -32,7 +32,7 @@ tags_metadata = [
     {"name": "Users", "description": "Работа с администраторами."},
     {"name": "Payment", "description": "Прием оплаты через Telegram Stars"},
     {"name": "Server", "description": "Получение метрик VPN-сервера"},
-    {"name": "Checks", "description": "Пингование инфраструктуры"},
+    {"name": "Server Checks", "description": "Пингование инфраструктуры"},
     {"name": "Promo", "description": "Промокоды для бонусного баланса"},
     {"name": "Referral", "description": "Реферальная система"},
 ]
