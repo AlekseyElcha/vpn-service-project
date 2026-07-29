@@ -50,6 +50,15 @@ async def add_new_user_to_db(
     return user
 
 
+async def add_new_user_to_session(
+        new_user: NewUserSchema,
+        session: AsyncSession
+) -> UserModel:
+    user = UserModel(**new_user.model_dump())
+    session.add(user)
+    return user
+
+
 async def add_new_user_to_db_without_commit(
         new_user: NewUserSchema,
         session: AsyncSession
