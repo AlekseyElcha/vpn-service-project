@@ -29,16 +29,16 @@ async def get_promo_code_info_from_db(
         session: AsyncSession
 ):
     query = select(PromoCodeModel).where(PromoCodeModel.code == code)
-    # try:
-    data = await session.execute(query)
-    result = data.scalar_one_or_none()
-    print(result)
-    if result:
-        return result
-    else:
-        raise NotFoundException
-    # except SQLAlchemyError:
-    #     raise DBCrudException
+    try:
+        data = await session.execute(query)
+        result = data.scalar_one_or_none()
+        print(result)
+        if result:
+            return result
+        else:
+            raise NotFoundException
+    except SQLAlchemyError:
+        raise DBCrudException
 
 
 async def add_promo_activation_record_to_db(
@@ -84,7 +84,7 @@ async def activate_promo(
     query_update_activations_left_counter = (
         update(PromoCodeModel)
         .where(PromoCodeModel.code == promo.code)
-        .values(activations_count = PromoCodeModel.activations_count + 1)
+        .values(activations_left = PromoCodeModel.activations_left - 1)
     )
 
     try:
