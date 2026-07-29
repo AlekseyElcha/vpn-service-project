@@ -4,3 +4,7 @@ class ActionsBaseException(BaseException):
 
 class DBActionException(ActionsBaseException):
     pass
+
+
+class NotFoundExceptionAction(ActionsBaseException):
+    pass
