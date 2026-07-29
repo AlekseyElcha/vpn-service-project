@@ -1,6 +1,6 @@
 import uuid
 from typing import List
-from sqlalchemy import text, BigInteger, ForeignKey
+from sqlalchemy import text, BigInteger, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID as SQLAUUID
 
@@ -22,6 +22,15 @@ class UserModel(Base):
         unique=True,
         index=True,
         nullable=False
+    )
+    ref_code: Mapped[str] = mapped_column(
+        unique=True,
+        nullable=False,
+        index=True,
+    )
+    referrer_id: Mapped[int] = mapped_column(
+        BigInteger,
+        nullable=True
     )
     balance: Mapped[float] = mapped_column(
         BigInteger,
@@ -157,3 +166,32 @@ class PromoActivationRecordModel(Base):
         back_populates="activations"
     )
 
+
+class ReferralModel(Base):
+    __tablename__ = "referrals"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        SQLAUUID(as_uuid=True),
+        primary_key=True,
+        server_default=text("gen_random_uuid()"),
+    )
+    referrer_tg_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("users.tg_id")
+    )
+    referred_tg_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("users.tg_id")
+    )
+    referrer: Mapped["UserModel"] = relationship(
+        "UserModel",
+        foreign_keys=[referrer_tg_id]
+    )
+    referred: Mapped["UserModel"] = relationship(
+        "UserModel",
+        foreign_keys=[referred_tg_id]
+    )
+
+    __table_args__ = (
+        UniqueConstraint("referred_tg_id", name="referred_tg_id_unique"),
+    )
