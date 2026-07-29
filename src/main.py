@@ -15,6 +15,7 @@ from src.api.v1.checks import router as checks_router
 from src.api.v1.promo import router as promo_router
 from src.api.v1.referral import router as referral_router
 
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     app.state.http_session = aiohttp.ClientSession()
@@ -32,6 +33,8 @@ tags_metadata = [
     {"name": "Payment", "description": "Прием оплаты через Telegram Stars"},
     {"name": "Server", "description": "Получение метрик VPN-сервера"},
     {"name": "Checks", "description": "Пингование инфраструктуры"},
+    {"name": "Promo", "description": "Промокоды для бонусного баланса"},
+    {"name": "Referral", "description": "Реферальная система"},
 ]
 
 
