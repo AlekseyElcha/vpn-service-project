@@ -13,6 +13,7 @@ from src.api.v1.server import router as server_router
 from src.api.v1.pay import router as payment_router
 from src.api.v1.checks import router as checks_router
 from src.api.v1.promo import router as promo_router
+from src.api.v1.referral import router as referral_router
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -56,6 +57,7 @@ app.include_router(router=users_router)
 app.include_router(router=server_router)
 app.include_router(router=checks_router)
 app.include_router(router=promo_router)
+app.include_router(router=referral_router)
 
 @app.get("/")
 async def root():
