@@ -1,6 +1,7 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from src.config.referral import ReferralProgramConfig
 from src.config.logs import LoggingConfig
 from src.config.payments import PaymentConfig
 from src.config.bot import TgBotConfig
@@ -16,6 +17,7 @@ class Settings(BaseSettings):
     bot: TgBotConfig
     payments: PaymentConfig
     logs: LoggingConfig
+    referral: ReferralProgramConfig
 
     model_config = SettingsConfigDict(
         env_file=".env",
