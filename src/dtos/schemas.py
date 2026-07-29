@@ -4,6 +4,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
+from src.core.utils import create_referral_code
+
 
 class ClientDetailSchema(BaseModel):
     email: str  # email - название клиента. использоать tg-id!!!
@@ -39,7 +41,9 @@ class DisableClientSchema(BaseModel):
 
 class NewUserSchema(BaseModel):
     tg_id: int
+    referrer_id: Optional[int] = None
     balance: int
+    ref_code: Optional[str] = Field(default_factory=lambda: create_referral_code())
 
 
 class TelegramAuthSchema(BaseModel):
@@ -70,7 +74,11 @@ class PromoCodeSchema(BaseModel):
 
 class PromoCodeActivationRecordSchema(BaseModel):
     tg_id: int
-    # Добавляем UUID промокода, который мы привязываем к этой записи
     promo_id: uuid.UUID
-    # Используем int | None для Python 3.10+
     time: int = Field(default_factory=lambda: int(time.time()))
+
+
+class ReferralActivationSchema(BaseModel):
+    referrer_tg_id: int
+    referred_tg_id: int
+    referral_code: str
