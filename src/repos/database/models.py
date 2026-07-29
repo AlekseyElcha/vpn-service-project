@@ -118,17 +118,12 @@ class PromoCodeModel(Base):
     bonus_amount: Mapped[int] = mapped_column(
         nullable=False
     )
-    creation_time: Mapped[int] = mapped_column(
-        BigInteger,
-        nullable=False,
-        index=True
-    )
     expiry_time: Mapped[int| None] = mapped_column(
         BigInteger,
         nullable=True,
         index=True
     )
-    activations_count: Mapped[int] = mapped_column()
+    activations_left: Mapped[int] = mapped_column()
     enable: Mapped[bool] = mapped_column(
         nullable=False
     )
