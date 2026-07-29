@@ -14,16 +14,16 @@ async def get_promo_info(
         code: str,
         session: AsyncSession
 ) -> PromoCodeModel | None:
-    # try:
+    try:
         promo_info = await get_promo_code_info_from_db(
             code=code,
             session=session
         )
         return promo_info
-    # except DBCrudException:
-    #     return None
-    # except NotFoundException:
-    #     raise NotFoundException
+    except DBCrudException:
+        return None
+    except NotFoundException:
+        raise NotFoundException
 
 
 async def check_promo_already_used(
