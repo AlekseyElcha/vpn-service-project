@@ -1,4 +1,3 @@
-import aiohttp
 from dotenv import load_dotenv
 
 from src.repos.database.models import Base

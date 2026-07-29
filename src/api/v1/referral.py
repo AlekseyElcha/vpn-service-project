@@ -82,7 +82,7 @@ async def activate_referral_subscription(
             detail="Произошла ошибка!"
         )
     success_message = (f"Успех! Вы воспользовались ссылкой пользователя {referral_info.referrer_tg_id}!\n\n"
-                       f"На Ваш начислен бонусный баланс на 7 дней подписки! Добро пожаловать в УруруVPN!")
+                       f"На Ваш аккаунт начислен бонусный баланс на 7 дней подписки! Добро пожаловать в УруруVPN!")
     return {
         "success": True,
         "msg": success_message
