@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
 
+from src.core.utils import create_referral_code
 from src.backend_logging import logger
 from src.dtos.schemas import NewUserSchema
 from src.repos.database.crud.creation import add_new_user_to_db
@@ -75,6 +76,8 @@ async def create_new_user(
         db_session: AsyncSession = Depends(get_db_session)
 ) -> JSONResponse:
     logger.info("POST /add request, new_user: {}".format(new_user))
+    if new_user.ref_code is None or new_user.ref_code == "":
+        new_user.ref_code = create_referral_code()
     try:
         user_exists = await user_existence_by_tg_id(
                 tg_id=int(new_user.tg_id),
