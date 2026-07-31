@@ -2,7 +2,10 @@ from fastapi import APIRouter, Query, status, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
 
+from src.backend_logging import logger
+from src.core.notifications.referral_activated import notify_tg_user_referral_activated
 from src.core.referral.user import get_referrer_tg_id_by_code
+from src.exceptions.notifications import QueuePublishException
 from src.exceptions.referrals import UserAlreadyExistsException
 from src.core.referral.activate import activate_referral
 from src.dtos.schemas import ReferralActivationSchema
@@ -83,7 +86,22 @@ async def activate_referral_subscription(
         )
     success_message = (f"Успех! Вы воспользовались ссылкой пользователя {referral_info.referrer_tg_id}!\n\n"
                        f"На Ваш аккаунт начислен бонусный баланс на 7 дней подписки! Добро пожаловать в УруруVPN!")
+    try:
+        await notify_tg_user_referral_activated(
+            tg_id=referrer_tg_id
+        )
+    except QueuePublishException:
+        logger.warning("Error sending referral activated via RMQ to TG: tg_id=%s", referrer_tg_id)
+        return {
+            "success": True,
+            "sent_via_broker": False,
+            "referrer_id": referrer_tg_id,
+            "msg": success_message
+        }
+
     return {
         "success": True,
+        "sent_via_broker": True,
+        "referrer_id": referrer_tg_id,
         "msg": success_message
     }
