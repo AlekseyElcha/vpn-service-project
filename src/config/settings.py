@@ -1,6 +1,7 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from src.config.rmq import RabbitMQConfig
 from src.config.referral import ReferralProgramConfig
 from src.config.logs import LoggingConfig
 from src.config.payments import PaymentConfig
@@ -18,6 +19,7 @@ class Settings(BaseSettings):
     payments: PaymentConfig
     logs: LoggingConfig
     referral: ReferralProgramConfig
+    rmq: RabbitMQConfig
 
     model_config = SettingsConfigDict(
         env_file=".env",
