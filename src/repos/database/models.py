@@ -190,3 +190,20 @@ class ReferralModel(Base):
     __table_args__ = (
         UniqueConstraint("referred_tg_id", name="referred_tg_id_unique"),
     )
+
+
+class LocalCurrenciesModel(Base):
+    __tablename__ = "local_currencies"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        SQLAUUID(as_uuid=True),
+        primary_key=True,
+        server_default=text("gen_random_uuid()"),
+    )
+    currency_code: Mapped[str] = mapped_column(
+        unique=True,
+        index=True
+    )
+    exchange_rate: Mapped[float] = mapped_column(
+        nullable=False
+    )
