@@ -16,6 +16,8 @@ def extract_basic_client_info(
 
     total_gb = client_data.get("totalGB") if client_data.get("totalGB") > 0 else -1
 
+    created_at = client_data.get("createdAt")
+
     # expiry_time ???
 
     client_info = {
@@ -23,7 +25,8 @@ def extract_basic_client_info(
         "totalGB": total_gb ,
         "expiryTime": client_data.get("expiryTime"),
         "trafficLeft": traffic_left,
-        "subId": sub_id
+        "subId": sub_id,
+        "createdAt": created_at
     }
 
     return client_info
