@@ -5,6 +5,7 @@ from fastapi import APIRouter, Body
 
 from src.backend_logging import logger
 from src.core.clients.toggle_client import enable_clients_by_user_tg_id
+from src.core.referral.checks import get_user_referrer
 from src.dtos.schemas import NewUserSchema, PaymentRecordSchema
 from src.exceptions.db import DBCrudException
 from src.payments.balance import update_balance
@@ -77,6 +78,7 @@ async def process_successful_payment(user_id: int = Body(embed=True),
                 tg_id=int(user_id),
                 session=db_session
             )
+
             logger.debug("Fetched user clients: tg_id=%s, user_clients=%s", int(user_id), user_clients)
 
             if enable_needed and user_clients:
@@ -87,7 +89,21 @@ async def process_successful_payment(user_id: int = Body(embed=True),
                 logger.debug("Clients required enable, enabled successfully, tg_id=%s, client_ids=%s",
                              int(user_id), user_clients)
 
+            user_referrer_id = await get_user_referrer(
+                tg_id=int(user_id),
+                session=db_session
+            )
+
+            if user_referrer_id:
+                await update_balance(
+                    user_tg_id=user_referrer_id,
+                    stars_amount=int(payment_amount * 0.1),
+                    session=db_session
+                )
+
             await db_session.commit()
+
+
             logger.info("POST /pay request -> 200 OK")
             return {
                 "success": True
