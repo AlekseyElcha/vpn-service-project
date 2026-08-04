@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
@@ -8,7 +10,8 @@ from src.dtos.schemas import NewUserSchema
 from src.repos.database.crud.creation import add_new_user_to_db
 from src.core.clients.client_info import get_subscriptions_by_tg_id
 from src.exceptions.db import DBCrudException
-from src.repos.database.crud.basic_utils import get_user_balance_by_tg_id, user_existence_by_tg_id
+from src.repos.database.crud.basic_utils import get_user_balance_by_tg_id, user_existence_by_tg_id, \
+    get_all_users_tg_ids_from_db
 from src.repos.database.get_session import get_db_session
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -119,4 +122,20 @@ async def create_new_user(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Не удалось создать пользователя"
         )
+
+
+@router.get("/ids")
+async def get_all_users_tg_ids(
+        db_session: AsyncSession = Depends(get_db_session)
+) -> List[int]:
+    try:
+        all_tg_ids = await get_all_users_tg_ids_from_db(
+            session=db_session
+        )
+    except DBCrudException:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Ошибка на сервере."
+        )
+    return all_tg_ids
 
