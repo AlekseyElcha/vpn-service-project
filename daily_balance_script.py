@@ -110,7 +110,7 @@ async def run_daily_billing(daily_cost: int = settings.payments.daily_price):
                         body=json.dumps(payload).encode("utf-8"),
                         delivery_mode=aio_pika.DeliveryMode.PERSISTENT
                     ),
-                    routing_key="notification_tasks"
+                    routing_key="tasks"
                 )
                 logger.info(f"[BILLING_SCRIPT] Сообщение для {tg_id} отправлено напрямую в notification_tasks.")
 
