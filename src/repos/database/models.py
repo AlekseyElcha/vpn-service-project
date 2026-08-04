@@ -200,6 +200,10 @@ class LocalCurrenciesModel(Base):
         primary_key=True,
         server_default=text("gen_random_uuid()"),
     )
+    currency_cmd_id: Mapped[int] = mapped_column(
+        unique=True,
+        index=True
+    )
     currency_code: Mapped[str] = mapped_column(
         unique=True,
         index=True
