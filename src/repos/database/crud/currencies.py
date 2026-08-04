@@ -1,4 +1,7 @@
-from sqlalchemy import select
+import asyncio
+from typing import Sequence
+
+from sqlalchemy import select, Row
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,4 +23,19 @@ async def get_currency_ratio_from_db(
         return result.exchange_rate
     except SQLAlchemyError as e:
         logger.warning(e)
+        raise DBCrudException
+
+
+async def get_many_currency_ratios_from_db(
+        currency_names: list[str],
+        session: AsyncSession
+):
+    query = (select(LocalCurrenciesModel.currency_code, LocalCurrenciesModel.exchange_rate)
+             .where(LocalCurrenciesModel.currency_code.in_(currency_names))
+    )
+    try:
+        data = await session.execute(query)
+        result = [row._asdict() for row in data.all()]
+        return result
+    except SQLAlchemyError:
         raise DBCrudException
