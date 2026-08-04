@@ -10,6 +10,7 @@ async def create_new_promo(
         new_promo: PromoCodeSchema,
         db_session: AsyncSession
 ):
+    new_promo.code = new_promo.code.lower()
     try:
         await add_new_promo_code_to_db(
             code=new_promo,

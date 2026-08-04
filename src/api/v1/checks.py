@@ -5,7 +5,7 @@ from ping3 import ping
 from src.backend_logging import logger
 from src.config.settings import settings
 
-router = APIRouter(prefix="/check", tags=["API Check"])
+router = APIRouter(prefix="/check", tags=["Server Checks"])
 
 
 @router.get("/ping-api")

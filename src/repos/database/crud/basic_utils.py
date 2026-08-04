@@ -51,3 +51,16 @@ async def get_user_clients(
         return list(res)
     except:
         raise DBCrudException
+
+
+async def get_all_users_tg_ids_from_db(
+        session: AsyncSession
+):
+    query = select(UserModel.tg_id)
+    try:
+        data = await session.execute(query)
+        result = data.scalars().all()
+        return list(result)
+    except SQLAlchemyError as e:
+        await session.rollback()
+        raise DBCrudException
