@@ -211,3 +211,27 @@ class LocalCurrenciesModel(Base):
     exchange_rate: Mapped[float] = mapped_column(
         nullable=False
     )
+
+
+class DailyGameStreakModel(Base):
+    __tablename__ = "user_streaks"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        SQLAUUID(as_uuid=True),
+        primary_key=True,
+        server_default=text("gen_random_uuid()"),
+    )
+    tg_id: Mapped[int] = mapped_column(
+        BigInteger,
+        index=True,
+        nullable=False,
+        unique=True
+    )
+    streak_count: Mapped[int] = mapped_column(
+        nullable=False,
+        default=0
+    )
+    last_checked_in: Mapped[int] = mapped_column(
+        nullable=False
+    )
+

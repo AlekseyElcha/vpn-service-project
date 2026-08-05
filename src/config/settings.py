@@ -2,6 +2,7 @@ from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from src.config.crypto import CryptoConfig
+from src.config.game import DailyGameConfig
 from src.config.rmq import RabbitMQConfig
 from src.config.referral import ReferralProgramConfig
 from src.config.logs import LoggingConfig
@@ -22,6 +23,7 @@ class Settings(BaseSettings):
     referral: ReferralProgramConfig
     rmq: RabbitMQConfig
     crypto: CryptoConfig
+    game: DailyGameConfig
 
     model_config = SettingsConfigDict(
         env_file=".env",
