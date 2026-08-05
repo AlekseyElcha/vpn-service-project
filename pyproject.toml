@@ -19,5 +19,6 @@ dependencies = [
     "pytest>=9.1.1",
     "sqlalchemy>=2.0.51",
     "telegram-stars-rates>=1.0.0",
+    "tzdata>=2026.3",
     "uvicorn[standart]>=0.50.2",
 ]
