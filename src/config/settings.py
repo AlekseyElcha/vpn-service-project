@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     rmq: RabbitMQConfig
     crypto: CryptoConfig
     game: DailyGameConfig
+    api_secret_key: str = "your-super-secret-key-change-it-in-production"
 
     model_config = SettingsConfigDict(
         env_file=".env",
