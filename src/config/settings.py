@@ -1,6 +1,7 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from src.config.api_security import APISecurityConfig
 from src.config.crypto import CryptoConfig
 from src.config.game import DailyGameConfig
 from src.config.rmq import RabbitMQConfig
@@ -24,7 +25,8 @@ class Settings(BaseSettings):
     rmq: RabbitMQConfig
     crypto: CryptoConfig
     game: DailyGameConfig
-    api_secret_key: str = "your-super-secret-key-change-it-in-production"
+    api_security: APISecurityConfig
+    # api_secret_key: str = "your-super-secret-key-change-it-in-production"
 
     model_config = SettingsConfigDict(
         env_file=".env",
