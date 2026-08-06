@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 import aiohttp
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Depends
 
 from src.backend_logging import logger
 from src.fastapi_startup import start
@@ -16,7 +17,7 @@ from src.api.v1.promo import router as promo_router
 from src.api.v1.referral import router as referral_router
 from src.api.v1.currencies import router as currency_router
 from src.api.v1.daily_game import router as daily_game_router
-
+from src.api.security import verify_api_key
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -44,6 +45,9 @@ app = FastAPI(
     lifespan=lifespan,
     openapi_tags=tags_metadata
 )
+
+# Добавляем глобальную зависимость на проверку ключа
+app.router.dependencies.append(Depends(verify_api_key))
 
 app.add_middleware(
     CORSMiddleware,
