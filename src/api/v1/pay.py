@@ -96,8 +96,9 @@ async def process_successful_payment(user_id: int = Body(embed=True),
                     session=db_session
                 )
 
-                if user_client.enable == False:
-                    enable_needed = True
+                if user_client:
+                    if not user_client.enable:
+                        enable_needed = True
                 else:
                     enable_needed = False
 
