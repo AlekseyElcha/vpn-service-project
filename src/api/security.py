@@ -8,7 +8,6 @@ from src.config.settings import settings
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 async def verify_api_key(api_key: str = Security(api_key_header)):
-    logger.debug(f"api_key: {api_key}, settings key: {settings.api_security.api_secret_key}")
     if api_key != settings.api_security.api_secret_key:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

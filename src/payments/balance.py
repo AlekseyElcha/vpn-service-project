@@ -8,12 +8,12 @@ from src.repos.database.models import UserModel
 
 async def update_balance(
         user_tg_id: int,
-        stars_amount: int | float,
+        amount: int | float,
         session: AsyncSession
 ) -> None:
     query = (update(UserModel)
              .where(UserModel.tg_id == user_tg_id)
-             .values(balance=UserModel.balance + stars_amount)
+             .values(balance=UserModel.balance + amount)
     )
     try:
         result = await session.execute(query)
@@ -27,12 +27,12 @@ async def update_balance(
 
 async def update_balance_outside_payment(
         user_tg_id: int,
-        stars_amount: int | float,
+        amount: int | float,
         session: AsyncSession
 ) -> None:
     query = (update(UserModel)
              .where(UserModel.tg_id == user_tg_id)
-             .values(balance=UserModel.balance + stars_amount)
+             .values(balance=UserModel.balance + amount)
     )
     try:
         result = await session.execute(query)

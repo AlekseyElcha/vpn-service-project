@@ -16,7 +16,7 @@ from src.repos.database.models import ClientModel, UserModel
 
 
 
-async def run_daily_billing(daily_cost: int = settings.payments.daily_price):
+async def run_daily_billing(daily_cost: int = settings.payment.daily_price):
     session_context = asynccontextmanager(get_db_session)
 
     async with session_context() as session:

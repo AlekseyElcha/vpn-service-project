@@ -101,6 +101,9 @@ class PaymentModel(Base):
     amount: Mapped[int] = mapped_column(
         nullable=False
     )
+    payment_type: Mapped[str] = mapped_column(
+        nullable=False,
+    )
 
 
 class PromoCodeModel(Base):

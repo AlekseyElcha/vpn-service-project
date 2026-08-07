@@ -8,7 +8,7 @@ from src.core.utils import create_referral_code
 
 
 class ClientDetailSchema(BaseModel):
-    email: str  # email - название клиента. использоать tg-id!!!
+    email: str  # email - название клиента. использоать там tg-id!!!
     creation_time: Optional[int] = Field(default_factory=lambda: int(time.time()))
     total_gb: int = Field(..., validation_alias="total_gb", serialization_alias="totalGB")
     expiry_time: int = Field(..., validation_alias="expiry_time", serialization_alias="expiryTime")
@@ -61,6 +61,7 @@ class PaymentRecordSchema(BaseModel):
     item_id: str
     time: int
     amount: int | float
+    payment_type: str # stars / crypto
 
 
 class PromoCodeSchema(BaseModel):

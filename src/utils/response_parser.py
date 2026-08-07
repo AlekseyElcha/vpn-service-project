@@ -18,15 +18,15 @@ def extract_basic_client_info(
 
     created_at = client_data.get("createdAt")
 
-    # expiry_time ???
+    expiry_time = client_data.get("expiryTime")
 
     client_info = {
         "email": client_data.get("email"),
-        "totalGB": total_gb ,
-        "expiryTime": client_data.get("expiryTime"),
+        "totalGB": total_gb,
         "trafficLeft": traffic_left,
         "subId": sub_id,
-        "createdAt": created_at
+        "createdAt": created_at,
+        "expiryTime": expiry_time
     }
 
     return client_info

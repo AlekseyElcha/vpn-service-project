@@ -1,4 +1,6 @@
+import time
 import uuid
+from datetime import datetime
 from typing import Annotated, Dict, Any
 
 from fastapi import APIRouter, Query, Depends, HTTPException, status
@@ -11,6 +13,7 @@ from fastapi.responses import JSONResponse
 from src.main import logger
 from src.core.utils import build_vpn_subscription_link_from_params
 from src.core.clients.client_info import get_client_info
+from src.repos.database.crud.checks import check_user_already_has_subscription
 from src.repos.database.crud.update import update_db_client
 from src.core.clients.update_client import update_vpn_client
 from src.exceptions.db import DBCrudException
@@ -24,6 +27,7 @@ from src.repos.database.crud.creation import add_new_client_to_db
 from src.dtos.schemas import NewClientSchema, ClientUpdateSchema
 from src.config.settings import settings
 from src.utils.response_parser import extract_basic_client_info
+from src.utils.time_utils import calculate_new_unix_expiry_time
 
 router = APIRouter(prefix="/clients", tags=["Clients"])
 
@@ -104,12 +108,47 @@ async def create_new_client(
         db_session: AsyncSession = Depends(get_db_session),
         http_session: aiohttp.ClientSession = Depends(get_http_session)
 ) -> JSONResponse:
+    user_tg_id = new_client.client.tg_id
+
+    try:
+        user_has_sub = await check_user_already_has_subscription(
+            tg_id=user_tg_id,
+            session=db_session
+        )
+    except DBCrudException:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "success": False,
+                "msg": "Произошла ошибка!"
+            }
+        )
+
+    if user_has_sub:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "success": False,
+                "msg": "У Вас уже есть подписка!"
+            }
+        )
+
+
     logger.info("POST /add request -> new_client: {}".format(new_client))
 
     email_extra = str(uuid.uuid4())[:5]
 
     client_email = new_client.client.email + email_extra
     new_client.client.email = client_email
+
+    creation_unix_time = int(time.time())
+
+    sub_expiration_time = calculate_new_unix_expiry_time(
+        first_unix_time=creation_unix_time,
+        month_ahead=1
+    )
+
+    new_client.client.expiry_time = sub_expiration_time
 
     # обработка через спец.класс
     await create_new_vpn_client(
@@ -136,20 +175,27 @@ async def create_new_client(
             logger.debug("Deleted vpn client successfully, email: {}".format(new_client.client.email))
         except HttpRequestException:
             logger.error("Error while deleting vpn client: {}".format(e))
-            raise HTTPException(
+            return JSONResponse(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Произошла ошибка внутренняя ошибка сервера."
+                content={
+                    "success": False,
+                    "msg": "Произошла ошибка!"
+                }
             )
-        raise HTTPException(
+        return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Произошла ошибка внутренняя ошибка сервера."
+            content={
+                "success": False,
+                "msg": "Произошла ошибка!"
+            }
         )
 
     logger.info("POST /add request -> 200 OK")
     return JSONResponse(
         status_code=status.HTTP_201_CREATED,
         content={
-            "success": True
+            "success": True,
+            "msg": "Подписка успешно создана!"
         }
     )
 

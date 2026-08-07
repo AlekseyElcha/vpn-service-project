@@ -40,7 +40,7 @@ async def activate_referral(
             )
             await update_balance_outside_payment(
                 user_tg_id=referral.referrer_tg_id,
-                stars_amount=settings.referral.referrer_bonus,
+                amount=settings.referral.referrer_bonus,
                 session=db_session
             )
 

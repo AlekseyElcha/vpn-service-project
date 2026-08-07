@@ -7,7 +7,7 @@ from src.config.game import DailyGameConfig
 from src.config.rmq import RabbitMQConfig
 from src.config.referral import ReferralProgramConfig
 from src.config.logs import LoggingConfig
-from src.config.payments import PaymentConfig
+from src.config.payment import PaymentConfig
 from src.config.bot import TgBotConfig
 from src.config.VPNPanelConfig import VPNPanelConfig
 from src.config.db import DBConfig
@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     app: AppConfig = Field(default_factory=AppConfig)
     vpn_panel: VPNPanelConfig
     bot: TgBotConfig
-    payments: PaymentConfig
+    payment: PaymentConfig
     logs: LoggingConfig
     referral: ReferralProgramConfig
     rmq: RabbitMQConfig

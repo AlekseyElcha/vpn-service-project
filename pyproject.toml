@@ -18,6 +18,7 @@ dependencies = [
     "ping3>=5.1.5",
     "pydantic-settings>=2.14.2",
     "pytest>=9.1.1",
+    "python-dateutil>=2.9.0.post0",
     "sqlalchemy>=2.0.51",
     "telegram-stars-rates>=1.0.0",
     "tzdata>=2026.3",

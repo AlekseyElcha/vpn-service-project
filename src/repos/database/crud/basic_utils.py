@@ -6,7 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.repos.database.models import ClientModel
-from src.exceptions.db import DBCrudException
+from src.exceptions.db import DBCrudException, NotFoundException
 from src.repos.database.models import UserModel
 
 
@@ -37,7 +37,7 @@ async def get_user_balance_by_tg_id(
     except SQLAlchemyError as e:
         raise DBCrudException from e
 
-
+# legacy
 async def get_user_clients(
         tg_id: int,
         session: AsyncSession
@@ -51,6 +51,25 @@ async def get_user_clients(
         return list(res)
     except:
         raise DBCrudException
+
+
+async def get_user_client_by_tg_id(
+        tg_id: int,
+        session: AsyncSession
+) -> ClientModel | None:
+    query = select(ClientModel).where(ClientModel.tg_id == tg_id)
+
+    try:
+        data = await session.execute(query)
+        subscription = data.scalar_one_or_none()
+    except SQLAlchemyError:
+        raise DBCrudException
+
+    if subscription is None:
+        return None
+
+    return subscription
+
 
 
 async def get_all_users_tg_ids_from_db(

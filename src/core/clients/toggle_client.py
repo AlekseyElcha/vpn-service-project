@@ -1,26 +1,36 @@
+import time
 import uuid
 from typing import List
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import update
+from sqlalchemy import update, select
 
-from src.exceptions.db import DBCrudException
+from src.exceptions.db import DBCrudException, NotFoundException
 from src.repos.database.models import ClientModel
+from src.utils.time_utils import calculate_new_unix_expiry_time
 
 
-async def enable_clients_by_user_tg_id(
-        client_ids: List[uuid.UUID],
+async def enable_and_prolong_client_by_user_tg_id(
+        client: ClientModel,
         session: AsyncSession
 ) -> None:
-    query = (
-        update(ClientModel)
-        .where(ClientModel.id.in_(client_ids))
-        .values(enable=True)
+    current_time = int(time.time())
+
+    new_exp_time = calculate_new_unix_expiry_time(
+        first_unix_time=current_time,
+        month_ahead=1
     )
-    try:
-        await session.execute(query)
-    except SQLAlchemyError:
-        raise DBCrudException
+
+    # try:
+    update_query = (
+        update(ClientModel)
+        .where(ClientModel.id == client.id)
+        .values(enable=True, expiry_time=new_exp_time)
+    )
+    await session.execute(update_query)
+    #
+    # except SQLAlchemyError:
+    #     raise DBCrudException
 
 
