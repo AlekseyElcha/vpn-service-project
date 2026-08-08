@@ -2,26 +2,91 @@ version: '3.8'
 
 services:
   db:
-    image: postgres:17-alpine
+    image: postgres:15-alpine
+    container_name: ururu-db
     environment:
-      POSTGRES_DB: ${DB__NAME}
-      POSTGRES_USER: ${DB__USER}
-      POSTGRES_PASSWORD: ${DB__PASSWORD}
+      POSTGRES_DB: ${DB__NAME:-vpn-project}
+      POSTGRES_USER: ${DB__USER:-postgres}
+      POSTGRES_PASSWORD: ${DB__PASSWORD:-postgres}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - app-network
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
+      - ururu-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: ururu-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ururu-network
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: ururu-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RMQ__USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RMQ__PASSWORD:-guest}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - ururu-network
+    restart: unless-stopped
+
+  backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: ururu-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DB__HOST: db
+      RMQ__HOST: rabbitmq
+      REDIS__HOST: redis
+    depends_on:
+      - db
+      - rabbitmq
+      - redis
+    networks:
+      - ururu-network
+    restart: unless-stopped
+
+  bot:
+    build:
+      context: ../vpn-tg-bot-microservice
+      dockerfile: Dockerfile
+    container_name: ururu-bot
+    env_file:
+      - ../vpn-tg-bot-microservice/.env
+    environment:
+      RABBITMQ__HOST: rabbitmq
+      REDIS__HOST: redis
+      BACKEND_URL: http://backend:8000
+    depends_on:
+      - backend
+      - rabbitmq
+      - redis
+    networks:
+      - ururu-network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
+  redis_data:
+  rabbitmq_data:
 
 networks:
-  app-network:
+  ururu-network:
     driver: bridge
