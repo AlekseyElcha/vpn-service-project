@@ -1,6 +1,6 @@
 import time
 import uuid
-from datetime import datetime
+
 from typing import Annotated, Dict, Any
 
 from fastapi import APIRouter, Query, Depends, HTTPException, status
@@ -148,13 +148,15 @@ async def create_new_client(
         month_ahead=1
     )
 
-    new_client.client.expiry_time = sub_expiration_time
+    new_client.client.expiry_time = sub_expiration_time * 1000 # 3x-ui ожидает время в мс
 
     # обработка через спец.класс
     await create_new_vpn_client(
         new_client=new_client,
         session=http_session
     )
+
+    new_client.client.expiry_time = sub_expiration_time # БД ожидает время с секундах
     logger.debug("Created new vpn client successfully, email: {}".format(client_email))
 
     try:
