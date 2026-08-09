@@ -74,6 +74,8 @@ services:
       RABBITMQ__HOST: rabbitmq
       REDIS__HOST: redis
       BACKEND_URL: http://backend:8000
+    extra_hosts: # убрать перед деплоем
+      - "host.docker.internal:host-gateway"
     depends_on:
       - backend
       - rabbitmq
