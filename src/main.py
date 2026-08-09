@@ -17,6 +17,7 @@ from src.api.v1.promo import router as promo_router
 from src.api.v1.referral import router as referral_router
 from src.api.v1.currencies import router as currency_router
 from src.api.v1.daily_game import router as daily_game_router
+from src.api.v1.redirect import router as redirect_router
 from src.api.security import verify_api_key
 
 @asynccontextmanager
@@ -69,6 +70,7 @@ app.include_router(router=promo_router)
 app.include_router(router=referral_router)
 app.include_router(router=currency_router)
 app.include_router(router=daily_game_router)
+app.include_router(router=redirect_router)
 
 @app.get("/")
 async def root():
