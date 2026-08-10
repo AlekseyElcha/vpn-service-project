@@ -1,4 +1,4 @@
-from urllib.parse import unquote, parse_qs
+from urllib.parse import unquote, parse_qs, quote
 
 from fastapi import APIRouter, Request, Query
 from fastapi.responses import HTMLResponse
@@ -70,7 +70,7 @@ APPS_CONFIG = {
         {
             "name": "Clash Verge Rev",
             "desc": "Самый красивый клиент для ПК. Великолепный интерфейс.",
-            "deep_link_scheme": "clash://install-config?url=",
+            "deep_link_scheme": "clash-verge://install-config?url=",
             "store_link": "https://github.com/clash-verge-rev/clash-verge-rev/releases"
         },
         {
@@ -83,7 +83,7 @@ APPS_CONFIG = {
             "name": "Happ",
             "desc": "Универсальный и минималистичный клиент.",
             "deep_link_scheme": "happ://import?url=",
-            "store_link": "https://github.com/happ-proxy"
+            "store_link": "https://github.com/happ-proxy/happ/releases"
         },
         {
             "name": "v2rayN",
@@ -96,7 +96,7 @@ APPS_CONFIG = {
         {
             "name": "Clash Verge Rev",
             "desc": "Самый красивый клиент с поддержкой графиков.",
-            "deep_link_scheme": "clash://install-config?url=",
+            "deep_link_scheme": "clash-verge://install-config?url=",
             "store_link": "https://github.com/clash-verge-rev/clash-verge-rev/releases"
         },
         {
@@ -151,11 +151,13 @@ async def connect_redirect(
         if previous == decoded_link:
             break
 
+    encoded_inner_link = quote(decoded_link, safe="")
+
     prepared_apps = []
     for app in apps:
-        deep_link = app['deep_link_scheme'] + decoded_link
+        deep_link = app['deep_link_scheme'] + encoded_inner_link
 
-        if "clash://" in deep_link:
+        if "clash" in deep_link:
             deep_link += "&name=UruruVPN"
 
         prepared_apps.append({
