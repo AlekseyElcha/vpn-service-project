@@ -54,6 +54,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:443",
+        "https://cdn-static-x9a.online"
     ],
     allow_credentials=True,
     allow_methods=["*"],
