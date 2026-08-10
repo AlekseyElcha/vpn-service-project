@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Request
+from urllib.parse import unquote, parse_qs
+
+from fastapi import APIRouter, Request, Query
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
@@ -81,7 +83,7 @@ APPS_CONFIG = {
             "name": "Happ",
             "desc": "Универсальный и минималистичный клиент.",
             "deep_link_scheme": "happ://import?url=",
-            "store_link": "https://github.com/happ-proxy/happ/releases"
+            "store_link": "https://github.com/happ-proxy"
         },
         {
             "name": "v2rayN",
@@ -124,32 +126,52 @@ APPS_CONFIG = {
     ]
 }
 
+
 @router.get("/connect", response_class=HTMLResponse)
-async def connect_redirect(request: Request, os: str, link: str):
+async def connect_redirect(
+        request: Request,
+        os: str = Query(...)
+):
     platform_key = os.lower()
     apps = APPS_CONFIG.get(platform_key, [])
-    
+
+    raw_query = request.url.query
+    parsed_params = parse_qs(raw_query)
+
+    link_value = ""
+    for key, values in parsed_params.items():
+        if key.lower() == "link" and values:
+            link_value = values[0]
+            break
+
+    decoded_link = link_value
+    while "%" in decoded_link:
+        previous = decoded_link
+        decoded_link = unquote(decoded_link)
+        if previous == decoded_link:
+            break
+
     prepared_apps = []
     for app in apps:
-        deep_link = app['deep_link_scheme'] + link
-        # Для clash verge scheme: clash://install-config?url=<ссылка>&name=UruruVPN
+        deep_link = app['deep_link_scheme'] + decoded_link
+
         if "clash://" in deep_link:
             deep_link += "&name=UruruVPN"
-            
+
         prepared_apps.append({
             "name": app["name"],
             "desc": app["desc"],
             "deep_link": deep_link,
             "store_link": app["store_link"]
         })
-        
+
     os_display_names = {
         "ios": "iOS (iPhone / iPad)",
         "android": "Android",
         "windows": "Windows",
         "mac": "macOS"
     }
-    
+
     os_title = os_display_names.get(platform_key, platform_key.capitalize())
 
     return templates.TemplateResponse(
@@ -158,6 +180,6 @@ async def connect_redirect(request: Request, os: str, link: str):
         context={
             "apps": prepared_apps,
             "os_name": os_title,
-            "sub_link": link
+            "sub_link": decoded_link
         }
     )
