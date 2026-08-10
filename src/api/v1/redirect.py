@@ -24,7 +24,7 @@ APPS_CONFIG = {
         {
             "name": "Happ",
             "desc": "Универсальный и минималистичный клиент.",
-            "deep_link_scheme": "happ://add-sub?url=",
+            "deep_link_scheme": "happ://add/",
             "store_link": "https://apps.apple.com/us/app/happ-proxy-utility/id6468994784"
         },
         {
@@ -56,7 +56,7 @@ APPS_CONFIG = {
         {
             "name": "Happ",
             "desc": "Универсальный и минималистичный клиент.",
-            "deep_link_scheme": "happ://add-sub?url=",
+            "deep_link_scheme": "happ://add/",
             "store_link": "https://play.google.com/store/apps/details?id=com.happ.proxy"
         },
         {
@@ -82,7 +82,7 @@ APPS_CONFIG = {
         {
             "name": "Happ",
             "desc": "Универсальный и минималистичный клиент.",
-            "deep_link_scheme": "happ://add-sub?url=",
+            "deep_link_scheme": "happ://add/",
             "store_link": "https://github.com/happ-proxy/happ/releases"
         },
         {
@@ -120,7 +120,7 @@ APPS_CONFIG = {
         {
             "name": "Happ",
             "desc": "Универсальный и минималистичный клиент.",
-            "deep_link_scheme": "happ://add-sub?url=",
+            "deep_link_scheme": "happ://add/",
             "store_link": "https://apps.apple.com/us/app/happ-proxy-utility/id6468994784"
         }
     ]
@@ -155,7 +155,11 @@ async def connect_redirect(
 
     prepared_apps = []
     for app in apps:
-        deep_link = app['deep_link_scheme'] + encoded_inner_link
+        scheme = app['deep_link_scheme']
+        if scheme.endswith('='):
+            deep_link = scheme + encoded_inner_link
+        else:
+            deep_link = scheme + decoded_link
 
         if "clash" in deep_link:
             deep_link += "&name=UruruVPN"
