@@ -24,7 +24,7 @@ APPS_CONFIG = {
         {
             "name": "Happ",
             "desc": "Универсальный и минималистичный клиент.",
-            "deep_link_scheme": "happ://import?url=",
+            "deep_link_scheme": "happ://add-sub?url=",
             "store_link": "https://apps.apple.com/us/app/happ-proxy-utility/id6468994784"
         },
         {
@@ -56,7 +56,7 @@ APPS_CONFIG = {
         {
             "name": "Happ",
             "desc": "Универсальный и минималистичный клиент.",
-            "deep_link_scheme": "happ://import?url=",
+            "deep_link_scheme": "happ://add-sub?url=",
             "store_link": "https://play.google.com/store/apps/details?id=com.happ.proxy"
         },
         {
@@ -82,7 +82,7 @@ APPS_CONFIG = {
         {
             "name": "Happ",
             "desc": "Универсальный и минималистичный клиент.",
-            "deep_link_scheme": "happ://import?url=",
+            "deep_link_scheme": "happ://add-sub?url=",
             "store_link": "https://github.com/happ-proxy/happ/releases"
         },
         {
@@ -120,7 +120,7 @@ APPS_CONFIG = {
         {
             "name": "Happ",
             "desc": "Универсальный и минималистичный клиент.",
-            "deep_link_scheme": "happ://import?url=",
+            "deep_link_scheme": "happ://add-sub?url=",
             "store_link": "https://apps.apple.com/us/app/happ-proxy-utility/id6468994784"
         }
     ]
