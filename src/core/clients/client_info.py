@@ -53,11 +53,10 @@ async def get_subscriptions_by_tg_id(
 ):
     query = select(ClientModel).where(ClientModel.tg_id == tg_id)
 
-    # try:
-    data = await session.execute(query)
-    results = data.scalars().all()
-    await session.flush()
+    try:
+        data = await session.execute(query)
+        results = data.scalars().all()
 
-    return results
-    # except:
-    #     raise DBCrudException
+        return results
+    except:
+        raise DBCrudException
