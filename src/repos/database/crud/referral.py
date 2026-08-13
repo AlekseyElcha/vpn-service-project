@@ -31,9 +31,9 @@ async def add_referral_record_to_db(
 ):
     new_referral = ReferralModel(**referral.model_dump(exclude={"referral_code"}))
     session.add(new_referral)
-    # try:
-    #     await session.commit()
-    #     await session.refresh(new_referral)
-    # except SQLAlchemyError:
-    #     await session.rollback()
-    #     raise DBCrudException
+    try:
+        await session.commit()
+        await session.refresh(new_referral)
+    except SQLAlchemyError:
+        await session.rollback()
+        raise DBCrudException

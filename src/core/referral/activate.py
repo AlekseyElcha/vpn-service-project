@@ -57,35 +57,36 @@ async def activate_referral(
                 db_session=db_session
             )
             logger.info(4)
-            for sub in referrer_emails:
-                current_sub_exp_time = sub.expiry_time
-                new_exp_time = calculate_new_unix_expiry_time_days(
-                    first_unix_time=current_sub_exp_time,
-                    days_ahead=1
-                )
+            if referrer_emails:
+                for sub in referrer_emails:
+                    current_sub_exp_time = sub.expiry_time
+                    new_exp_time = calculate_new_unix_expiry_time_days(
+                        first_unix_time=current_sub_exp_time,
+                        days_ahead=1
+                    )
 
-                await update_vpn_client(
-                    email=sub.email,
-                    updated_client=ClientUpdateSchema(
+                    await update_vpn_client(
                         email=sub.email,
-                        expiry_time=new_exp_time,
-                        total_gb=sub.total_gb,
-                        enable=True,
-                        tg_id=sub.tg_id
-                    ).model_dump(by_alias=True),
-                    session=http_session
-                )
-                logger.info(5)
+                        updated_client=ClientUpdateSchema(
+                            email=sub.email,
+                            expiry_time=new_exp_time,
+                            total_gb=sub.total_gb,
+                            enable=True,
+                            tg_id=sub.tg_id
+                        ).model_dump(by_alias=True),
+                        session=http_session
+                    )
+                    logger.info(5)
 
-                await update_db_client(
-                    ClientUpdateSchema(
-                        email=sub.email,
-                        expiry_time=new_exp_time,
-                        total_gb=0
-                    ),
-                    session=db_session
-                )
-                logger.info(6)
+                    await update_db_client(
+                        ClientUpdateSchema(
+                            email=sub.email,
+                            expiry_time=new_exp_time,
+                            total_gb=0
+                        ),
+                        session=db_session
+                    )
+                    logger.info(6)
             logger.info(7)
         except DBCrudException:
             raise DBActionException

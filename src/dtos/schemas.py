@@ -21,6 +21,7 @@ class ClientDetailSchema(BaseModel):
 
 class NewClientSchema(BaseModel):
     client: ClientDetailSchema
+    is_trial: bool
     inbound_ids: List[int] = Field(..., validation_alias="inbound_ids", serialization_alias="inboundIds")
 
     class Config:

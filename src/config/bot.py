@@ -6,3 +6,4 @@ class TgBotConfig(BaseModel):
     name: str
     proxy: str
     payment_test_mode: int
+    admins: list[int]

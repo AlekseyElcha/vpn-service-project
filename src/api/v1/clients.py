@@ -3,7 +3,7 @@ import uuid
 
 from typing import Annotated, Dict, Any
 
-from fastapi import APIRouter, Query, Depends, HTTPException, status
+from fastapi import APIRouter, Query, Depends, HTTPException, status, Body
 
 import aiohttp
 
@@ -14,7 +14,7 @@ from src.main import logger
 from src.core.utils import build_vpn_subscription_link_from_params
 from src.core.clients.client_info import get_client_info
 from src.repos.database.crud.checks import check_user_already_has_subscription
-from src.repos.database.crud.update import update_db_client
+from src.repos.database.crud.update import update_db_client, update_trial_availability
 from src.core.clients.update_client import update_vpn_client
 from src.exceptions.db import DBCrudException
 from src.repos.database.crud.removal import delete_client_from_db
@@ -27,7 +27,7 @@ from src.repos.database.crud.creation import add_new_client_to_db
 from src.dtos.schemas import NewClientSchema, ClientUpdateSchema
 from src.config.settings import settings
 from src.utils.response_parser import extract_basic_client_info
-from src.utils.time_utils import calculate_new_unix_expiry_time_month
+from src.utils.time_utils import  calculate_new_unix_expiry_time_days, calculate_new_unix_expiry_time_month
 
 router = APIRouter(prefix="/clients", tags=["Clients"])
 
@@ -142,11 +142,17 @@ async def create_new_client(
     new_client.client.email = client_email
 
     creation_unix_time = int(time.time())
-
-    sub_expiration_time = calculate_new_unix_expiry_time_month(
-        first_unix_time=creation_unix_time,
-        month_ahead=1
-    )
+    
+    if new_client.is_trial:
+        sub_expiration_time = calculate_new_unix_expiry_time_days(
+            first_unix_time=creation_unix_time,
+            days_ahead=3
+        )
+    else:
+        sub_expiration_time = calculate_new_unix_expiry_time_month(
+            first_unix_time=creation_unix_time,
+            month_ahead=1
+        )
 
     new_client.client.expiry_time = sub_expiration_time * 1000 # 3x-ui ожидает время в мс
 
@@ -161,9 +167,15 @@ async def create_new_client(
 
     try:
         await add_new_client_to_db(
-        new_client=new_client,
-        session=db_session
+            new_client=new_client,
+            session=db_session
         )
+        await update_trial_availability(
+            user_tg_id=user_tg_id,
+            valid_for_trial=False,
+            trial_used=True,
+            session=db_session
+        ) # при покупке / получении бесплатной подписки возможность получения тестового периода слетает
         logger.debug("Created new db client successfully")
 
     except Exception as e:

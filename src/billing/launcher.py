@@ -15,7 +15,7 @@ from src.config.settings import settings
 from src.exceptions.db import DBCrudException
 from src.repos.database.get_session import get_db_session
 from src.repos.database.models import ClientModel, UserModel
-from src.utils.time_utils import calculate_new_unix_expiry_time
+from src.utils.time_utils import calculate_new_unix_expiry_time_month
 
 MONTHLY_PRICE_RUB = settings.payment.price_1_month_rub
 HOUR_IN_UNIX = 3600
@@ -74,7 +74,7 @@ async def run_billing():
             for client, user in expired_with_balance:
                 new_user_balance = user.balance - MONTHLY_PRICE_RUB
 
-                base_expiry = calculate_new_unix_expiry_time(
+                base_expiry = calculate_new_unix_expiry_time_month(
                     first_unix_time=current_unix_time,
                     month_ahead=1
                 )

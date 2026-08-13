@@ -14,7 +14,7 @@ async def notify_tg_user_referral_activated(tg_id: int):
             "action": "notify",
             "tg_id": tg_id,
             "message": f"Поздравляем! Вашей реферальной ссылкой успешно воспользовались!\n"
-                       f"Ваша подписка продлена на "
+                       f"Ваша подписка продлена на 3 дня!"
         }
 
         async with rabbitmq_conn, rabbitmq_conn.channel() as rmq_channel:
