@@ -1,21 +1,23 @@
-from typing import List
+from typing import List, Annotated
 
+import aiohttp
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
 
 from src.core.utils import create_referral_code
 from src.backend_logging import logger
-from src.dtos.schemas import NewUserSchema
+from src.dtos.schemas import NewUserSchema, NewClientSchema
+from src.repos.database.crud.checks import check_user_is_valid_for_trial_sub
 from src.repos.database.crud.creation import add_new_user_to_db
 from src.core.clients.client_info import get_subscriptions_by_tg_id
 from src.exceptions.db import DBCrudException
 from src.repos.database.crud.basic_utils import get_user_balance_by_tg_id, user_existence_by_tg_id, \
     get_all_users_tg_ids_from_db
 from src.repos.database.get_session import get_db_session
+from src.repos.http_connector.get_http_session import get_http_session
 
 router = APIRouter(prefix="/users", tags=["Users"])
-
 
 @router.get("/balance")
 async def get_user_balance(
@@ -87,7 +89,7 @@ async def create_new_user(
                 session=db_session
             )
         if user_exists:
-            logger.debug("POST /add request, new_user: {} -> 201 OK".format(new_user))
+            logger.debug("POST /add request -> user_exists -> 200 OK".format(new_user))
             return JSONResponse(
                 status_code=status.HTTP_200_OK,
                 content={
@@ -107,7 +109,7 @@ async def create_new_user(
             new_user=new_user,
             session=db_session
         )
-        logger.debug("POST /add request, new_user: {} -> 200 OK".format(new_user))
+        logger.debug("POST /add request, new_user: {} -> 201 OK".format(new_user))
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
             content={
@@ -139,3 +141,27 @@ async def get_all_users_tg_ids(
         )
     return all_tg_ids
 
+
+@router.get("/trial_validity")
+async def check_if_user_valid_for_trial(
+        tg_id: int = Query(...),
+        db_session: AsyncSession = Depends(get_db_session),
+) -> JSONResponse:
+    try:
+        is_valid = await check_user_is_valid_for_trial_sub(
+            tg_id=tg_id,
+            session=db_session
+        )
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "success": True,
+                "is_valid": is_valid
+            }
+        )
+    except DBCrudException:
+        logger.warning("Error while checking if user is valid for trial: {}".format(tg_id))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Ошибка при проверки валидности пользователя для получения пробной подписки."
+        )

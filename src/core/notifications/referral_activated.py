@@ -14,8 +14,7 @@ async def notify_tg_user_referral_activated(tg_id: int):
             "action": "notify",
             "tg_id": tg_id,
             "message": f"Поздравляем! Вашей реферальной ссылкой успешно воспользовались!\n"
-                       f"На Ваш баланс начислен бонус {1}!\n"
-                       f"Спасибо Вам!"
+                       f"Ваша подписка продлена на "
         }
 
         async with rabbitmq_conn, rabbitmq_conn.channel() as rmq_channel:
@@ -24,8 +23,8 @@ async def notify_tg_user_referral_activated(tg_id: int):
                     body=json.dumps(payload).encode("utf-8"),
                     delivery_mode=aio_pika.DeliveryMode.PERSISTENT
                 ),
-                routing_key="notification_tasks"
+                routing_key="tasks"
             )
-            logger.info("Published referral activated notification message to queue notification_tasks, payload=%s", payload)
+            logger.info("Published referral activated notification message to queue tasks, payload=%s", payload)
     except aio_pika.exceptions.AMQPError as e:
         raise QueuePublishException
