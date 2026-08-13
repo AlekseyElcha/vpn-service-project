@@ -1,3 +1,4 @@
+import aiohttp
 from fastapi import APIRouter, Query, status, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
@@ -12,6 +13,7 @@ from src.dtos.schemas import ReferralActivationSchema
 from src.exceptions.actions import DBActionException, NotFoundExceptionAction
 from src.core.referral.get_link import get_referral_link_for_tg_user
 from src.repos.database.get_session import get_db_session
+from src.repos.http_connector.get_http_session import get_http_session
 
 router = APIRouter(prefix="/referral", tags=["Referral"])
 
@@ -49,7 +51,8 @@ async def get_tg_bot_referral_link(
 async def activate_referral_subscription(
         referral_code: str  = Query(...),
         referred_tg_id: int = Query(...),
-        db_session: AsyncSession = Depends(get_db_session)
+        db_session: AsyncSession = Depends(get_db_session),
+        http_session: aiohttp.ClientSession = Depends(get_http_session)
 ):
     referrer_tg_id = await get_referrer_tg_id_by_code(
         ref_code=referral_code,
@@ -71,7 +74,8 @@ async def activate_referral_subscription(
     try:
         await activate_referral(
             referral=referral_info,
-            db_session=db_session
+            db_session=db_session,
+            http_session=http_session
         )
     except UserAlreadyExistsException:
         return {

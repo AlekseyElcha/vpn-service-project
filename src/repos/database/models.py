@@ -37,6 +37,12 @@ class UserModel(Base):
         nullable=False,
         index=True
     )
+    valid_for_trial: Mapped[bool] = mapped_column(
+        nullable=False
+    )
+    trial_used: Mapped[bool] = mapped_column(
+        nullable=False
+    )
     clients: Mapped[List["ClientModel"]] = relationship(
         "ClientModel",
         back_populates="user",

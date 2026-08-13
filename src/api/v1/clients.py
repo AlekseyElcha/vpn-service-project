@@ -27,7 +27,7 @@ from src.repos.database.crud.creation import add_new_client_to_db
 from src.dtos.schemas import NewClientSchema, ClientUpdateSchema
 from src.config.settings import settings
 from src.utils.response_parser import extract_basic_client_info
-from src.utils.time_utils import calculate_new_unix_expiry_time
+from src.utils.time_utils import calculate_new_unix_expiry_time_month
 
 router = APIRouter(prefix="/clients", tags=["Clients"])
 
@@ -143,7 +143,7 @@ async def create_new_client(
 
     creation_unix_time = int(time.time())
 
-    sub_expiration_time = calculate_new_unix_expiry_time(
+    sub_expiration_time = calculate_new_unix_expiry_time_month(
         first_unix_time=creation_unix_time,
         month_ahead=1
     )

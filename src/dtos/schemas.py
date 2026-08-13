@@ -44,6 +44,8 @@ class NewUserSchema(BaseModel):
     referrer_id: Optional[int] = None
     balance: int
     ref_code: Optional[str] = Field(default_factory=lambda: create_referral_code())
+    valid_for_trial: bool = True
+    trial_used: bool = False
 
 
 class TelegramAuthSchema(BaseModel):
